@@ -83,6 +83,8 @@ async def responder_mencao(update: Update, context):
                 pass
 
 def main():
+    import asyncio
+    
     logger.info("🤖 Iniciando bot 24/7...")
     app = Application.builder().token(TELEGRAM_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
@@ -94,6 +96,13 @@ def main():
     app.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, boas_vindas))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, responder_mencao))
     logger.info("✅ Bot online!")
+    
+    # Corrigir evento loop para Python 3.14+
+    try:
+        asyncio.get_event_loop()
+    except RuntimeError:
+        asyncio.set_event_loop(asyncio.new_event_loop())
+    
     app.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == '__main__':
